@@ -4,7 +4,8 @@ use messaging::{CloudMessaging,CloudMessagingTrait};
 async fn main() {
     println!("Starting microEdge!");
 
-    let cloud_messaging = CloudMessaging::new(on_status_message);
+    let cloud_messaging = CloudMessaging::new();
+    
 
     cloud_messaging.start().await;
 
