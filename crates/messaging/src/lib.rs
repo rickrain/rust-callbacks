@@ -1,12 +1,17 @@
 pub mod iot_hub_device;
 
 use async_trait::async_trait;
-use orchestration::OrchestrationEngine;
+use orchestration::{OrchestrationEngine,OrchestrationError};
 
-#[derive(Copy, Clone)]
+type StatusCallback = Box<dyn Fn(&str)>;
+//type ErrorCallback = Box<dyn Fn(OrchestrationError)>;
+type ErrorCallback = Box<dyn Fn(&str)>;
+
+//#[derive(Copy, Clone)]
 pub struct CloudMessaging {
-    on_status_message: fn(&str),
-    orchestration: OrchestrationEngine,
+    orchestration_engine: OrchestrationEngine,
+    status_callback: StatusCallback,
+    error_callback: ErrorCallback,
 }
 
 #[async_trait(?Send)]
