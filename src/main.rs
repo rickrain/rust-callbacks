@@ -10,7 +10,7 @@ async fn main() {
     
     cloud_messaging.start().await;
 
-    println!("Stopping microEdge...");
+    //println!("Stopping microEdge...");
 }
 
 fn on_status(status_msg: &str) {

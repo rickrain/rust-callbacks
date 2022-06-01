@@ -38,13 +38,11 @@ impl CloudMessaging {
         // orchestration_engine.add_status_handler(Box::new(Self::on_status));
         // orchestration_engine.add_error_handler(Box::new(Self::on_error));
 
-        let cloud_messaging = CloudMessaging {
+        CloudMessaging {
             orchestration_engine,
             status_callback: Box::new(|_| {}),
             error_callback: Box::new(|_| {}),
-        };
-
-        cloud_messaging
+        }
     }
 
     pub fn add_status_handler(&mut self, callback: StatusCallback) {

@@ -1,4 +1,6 @@
+use std::{thread::{self, JoinHandle}, sync::mpsc::Receiver};
 use async_trait::async_trait;
+use container_mgmt::{ContainerManager, ContainerManagementTrait};
 
 pub enum OrchestrationError {
     Crashed(String),
@@ -8,8 +10,8 @@ pub enum OrchestrationError {
 
 type Result<T> = std::result::Result<T, OrchestrationError>;
 
-type StatusCallback = Box<dyn Fn(&str)>;
-type ErrorCallback = Box<dyn Fn(OrchestrationError)>;
+type StatusCallback = Box<dyn Fn(&str) + Send + Sync + 'static>;
+type ErrorCallback = Box<dyn Fn(OrchestrationError) + Sync>;
 
 #[async_trait(?Send)]
 pub trait OrchestrationEngineTrait {
@@ -26,17 +28,21 @@ pub struct OrchestrationEngine {
 #[async_trait(?Send)]
 impl OrchestrationEngineTrait for OrchestrationEngine {
     async fn update_manifest(&self) -> Result<String> {
-        // // Update manifest here
-        // (self.status_callback)("Manifest Updated");
-        
-        // // Simulate an error - Timeout after 300 seconds
-        // (self.error_callback)(OrchestrationError::Timeout(300));
-
         // Figure out what's running
 
         // Compare manifest differences
 
-        // Call into container to make the changes
+        // Start a container
+        let container_name = "c1".to_string();
+        let container = ContainerManager::start_container(container_name).await;
+
+        let handle = thread::spawn(move || {
+            let receiver = container.0;
+
+            while let Ok(message) = receiver.recv() {
+                //(self.status_callback)(&message);
+            }
+        });
 
         Ok("Manifest updated!".to_string())
 
@@ -47,9 +53,9 @@ impl OrchestrationEngineTrait for OrchestrationEngine {
 
 impl OrchestrationEngine {
     pub fn new() -> Self {
-        Self {
+        OrchestrationEngine {
             status_callback: Box::new(|_| {}), 
-            error_callback: Box::new(|_| {}), 
+            error_callback: Box::new(|_| {}),
         }
     }
 
